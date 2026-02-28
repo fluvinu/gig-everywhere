@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { User, Settings, CreditCard, HelpCircle, LogOut, ChevronRight, Star, MapPin, Briefcase } from "lucide-react";
-import BottomNav from "@/components/BottomNav";
+import AppLayout from "@/components/AppLayout";
 
 const Profile = () => {
   const menuItems = [
@@ -13,9 +13,9 @@ const Profile = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <AppLayout>
       <header className="bg-primary px-4 pt-8 pb-6">
-        <div className="max-w-lg mx-auto">
+        <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -32,7 +32,7 @@ const Profile = () => {
         </div>
       </header>
 
-      <main className="max-w-lg mx-auto px-4 -mt-3">
+      <main className="max-w-2xl mx-auto px-4 md:px-6 -mt-3 pb-20 md:pb-10">
         {/* Stats */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -85,9 +85,7 @@ const Profile = () => {
           Sign In
         </motion.button>
       </main>
-
-      <BottomNav />
-    </div>
+    </AppLayout>
   );
 };
 

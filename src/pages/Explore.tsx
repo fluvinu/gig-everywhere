@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Filter, MapPin, SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 import GigCard from "@/components/GigCard";
-import CategoryCard from "@/components/CategoryCard";
-import BottomNav from "@/components/BottomNav";
+import AppLayout from "@/components/AppLayout";
+import MapView from "@/components/MapView";
 import { categories, gigs } from "@/data/gigs";
 import { useSearchParams } from "react-router-dom";
 
@@ -18,16 +18,22 @@ const Explore = () => {
     : gigs;
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <AppLayout>
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-lg border-b border-border/50">
+      <header className="md:hidden sticky top-0 z-40 bg-background/90 backdrop-blur-lg border-b border-border/50">
         <div className="px-4 py-3 max-w-lg mx-auto">
           <h1 className="font-heading text-lg font-bold text-foreground mb-3">Explore Services</h1>
           <SearchBar />
         </div>
       </header>
 
-      <main className="max-w-lg mx-auto px-4 mt-4">
+      <main className="max-w-6xl mx-auto px-4 md:px-6 mt-4 pb-20 md:pb-10">
+        {/* Desktop Search */}
+        <div className="hidden md:block max-w-xl mb-6">
+          <h1 className="font-heading text-2xl font-bold text-foreground mb-4">Explore Services</h1>
+          <SearchBar />
+        </div>
+
         {/* Category Filter Chips */}
         <div className="flex items-center gap-2 overflow-x-auto pb-3 scrollbar-hide">
           <button
@@ -65,24 +71,33 @@ const Explore = () => {
           </button>
         </div>
 
-        {/* Gig List */}
-        <div className="space-y-3">
-          {filteredGigs.map((gig, i) => (
-            <GigCard key={gig.id} gig={gig} index={i} />
-          ))}
-        </div>
+        {/* Desktop: Two-column with map */}
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex-1 min-w-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {filteredGigs.map((gig, i) => (
+                <GigCard key={gig.id} gig={gig} index={i} />
+              ))}
+            </div>
 
-        {filteredGigs.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-4xl mb-3">🔍</p>
-            <p className="font-heading font-semibold text-foreground">No services found</p>
-            <p className="text-sm text-muted-foreground mt-1">Try a different category or search term</p>
+            {filteredGigs.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-4xl mb-3">🔍</p>
+                <p className="font-heading font-semibold text-foreground">No services found</p>
+                <p className="text-sm text-muted-foreground mt-1">Try a different category or search term</p>
+              </div>
+            )}
           </div>
-        )}
-      </main>
 
-      <BottomNav />
-    </div>
+          {/* Desktop Map */}
+          <div className="hidden lg:block w-[400px] flex-shrink-0">
+            <div className="sticky top-24">
+              <MapView filteredGigs={filteredGigs} height="h-[600px]" />
+            </div>
+          </div>
+        </div>
+      </main>
+    </AppLayout>
   );
 };
 
