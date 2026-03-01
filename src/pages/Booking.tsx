@@ -5,6 +5,8 @@ import { gigs } from "@/data/gigs";
 import { useState } from "react";
 import AppLayout from "@/components/AppLayout";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const timeSlots = [
   "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
@@ -22,6 +24,7 @@ const paymentMethods = [
 const Booking = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const gig = gigs.find((g) => g.id === id);
 
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
@@ -44,10 +47,26 @@ const Booking = () => {
     return d;
   });
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
+    if (!user) { toast.error("Please sign in to book"); navigate("/auth"); return; }
     if (!selectedDate && selectedDate !== 0) { toast.error("Please select a date"); return; }
     if (!selectedTime) { toast.error("Please select a time slot"); return; }
     if (!address.trim()) { toast.error("Please enter your address"); return; }
+
+    const bookingDate = dates[selectedDate!];
+    const { error } = await supabase.from("bookings").insert({
+      user_id: user.id,
+      gig_id: gig.id,
+      gig_title: gig.title,
+      provider_name: gig.provider.name,
+      price: gig.price,
+      booking_date: bookingDate.toISOString().split("T")[0],
+      booking_time: selectedTime,
+      address: address.trim(),
+      payment_method: payment,
+    });
+
+    if (error) { toast.error("Booking failed: " + error.message); return; }
     setConfirmed(true);
     toast.success("Booking confirmed! 🎉");
   };
